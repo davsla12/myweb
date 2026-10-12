@@ -5,6 +5,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <linux/limits.h>
+
+#include "endpoints.h"
+#include "helpers.h"
 
 #define PORT 8888
 
@@ -66,7 +70,6 @@ static enum MHD_Result answer_to_connection(void *cls, struct MHD_Connection *co
                                             const char *url, const char *method,
                                             const char *version, const char *upload_data,
                                             size_t *upload_data_size, void **con_cls) {
-
     // 1. První volání pro nové připojení
     if (*con_cls == NULL) {
         struct connection_info_struct *con_info = calloc(1, sizeof(struct connection_info_struct));
@@ -88,51 +91,11 @@ static enum MHD_Result answer_to_connection(void *cls, struct MHD_Connection *co
         return MHD_YES;
     }
 
-    struct connection_info_struct *con_info = *con_cls;
+    printf("method: %s url: %s\n",method,url);
+    printf("Size %lu bytes\n",*upload_data_size);
+    printf("Data: %s\n",upload_data);
 
-    // Pokud již byla odpověď odeslána, nic dalšího neděláme
-    if (con_info->response_sent)
-        return MHD_YES;
-
-    // 2. Zpracování POST požadavku
-    if (strcmp(method, "POST") == 0) {
-        if (*upload_data_size != 0) {
-            MHD_post_process(con_info->postprocessor, upload_data, *upload_data_size);
-            *upload_data_size = 0;
-            return MHD_YES;
-        } else {
-            con_info->response_sent = 1;
-
-            printf("Zadáno uživatelské jméno: %s\n", con_info->username ? con_info->username : "(prázdné)");
-
-            const char *response_page;
-            if (con_info->username && strcmp(con_info->username, "admin") == 0 &&
-                con_info->password && strcmp(con_info->password, "heslo123") == 0) {
-                response_page = "<html><body><h1>Přihlášení úspěšné!</h1></body></html>";
-            } else {
-                response_page = "<html><body><h1>Chybné jméno nebo heslo!</h1><a href='/'>Zpět</a></body></html>";
-            }
-
-            return send_page(connection, response_page, MHD_HTTP_OK);
-        }
-    }
-
-    // 3. Zpracování GET požadavku
-    if (strcmp(method, "GET") == 0) {
-        con_info->response_sent = 1;
-        const char *form =
-            "<html><body>"
-            "<h2>Přihlášení do systému</h2>"
-            "<form action=\"/login\" method=\"POST\">"
-            "Jméno: <input type=\"text\" name=\"username\"><br><br>"
-            "Heslo: <input type=\"password\" name=\"password\"><br><br>"
-            "<input type=\"submit\" value=\"Odeslat\">"
-            "</form>"
-            "</body></html>";
-        return send_page(connection, form, MHD_HTTP_OK);
-    }
-
-    return MHD_NO;
+    return Endpoints(connection, url, method);
 }
 
 // Funkce pro úklid paměti po dokončení spojení
@@ -143,12 +106,21 @@ static void request_completed_callback(void *cls, struct MHD_Connection *connect
     if (con_info == NULL)
         return;
 
-    if (con_info->connection_type == 1 && con_info->postprocessor != NULL) {
+    // Pokud šlo o POST požadavek, zničení postprocessoru
+    if (con_info->postprocessor != NULL) {
         MHD_destroy_post_processor(con_info->postprocessor);
     }
 
-    free(con_info->username);
-    free(con_info->password);
+    // Uvolnění alokovaných řetězců
+    if (con_info->username != NULL) {
+        free(con_info->username);
+    }
+
+    if (con_info->password != NULL) {
+        free(con_info->password);
+    }
+
+    // Uvolnění hlavní struktury spojení
     free(con_info);
     *con_cls = NULL;
 }
