@@ -1,0 +1,80 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #121212;
+    color: #ffffff;
+    text-align: center;
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+/* Hlavní řádek pro oba sloupce */
+.select-group {
+    display: flex;
+    justify-content: space-between; /* První sloupec vlevo, druhý vpravo */
+    width: 100%;
+}
+
+/* Jednotlivý sloupec s nadpisem a selectem */
+.select-box {
+    width: 45%; /* Každý sloupec zabere 45 %, vznikne automatická mezera 10 % */
+}
+
+/* Nastavení prvku select uvnitř sloupce */
+.select-box select {
+    width: 100%; /* Roztáhne select na plnou šířku jeho sloupce (45 %) */
+}
+
+/* Volitelné: úprava velikosti nadpisu */
+.select-box h2 {
+    margin-bottom: 8px; /* Odstup nadpisu od nabídky pod ním */
+    font-size: 1.2rem;
+}
+
+h2 {
+    margin-bottom: 20px;
+    font-weight: 300;
+}
+
+select {
+    padding: 12px 18px;
+    font-size: 16px;
+    margin-bottom: 25px;
+    background-color: #222222;
+    color: #ffffff;
+    border: 1px solid #444444;
+    border-radius: 6px;
+    cursor: pointer;
+    outline: none;
+    width: 100%;
+    max-width: 400px;
+}
+
+#playerContainer {
+    display: none;
+    margin-top: 10px;
+}
+
+video {
+    width: 100%;
+    max-height: 80vh;
+    background: #000000;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+/* Úprava titulku: Žlutý text, průhledné pozadí, černý obrys */
+video::cue {
+    color: #ffeb3b;
+    background: transparent;
+    /*font-size: 100%;*/
+    text-shadow: 
+        2px  2px 2px #000,
+       -2px -2px 2px #000,
+        2px -2px 2px #000,
+       -2px  2px 2px #000;
+}

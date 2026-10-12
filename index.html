@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Přehrávač</title>
+    <link rel="icon" type="image/x-icon" href="static/favicon.ico">
+    <link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Vyberte video k přehrání:</h2>
+        
+        <div class="select-group">
+
+            <div class="select-box">
+                <h2>Vyberte pořad:</h2>
+                <select id="programSelect" onchange=LoadvideoSelect()>
+                    <option value="">-- Zvolte pořad --</option>
+                </select>
+            </div>
+            <!-- První sloupec (nadpis + select) -->
+            <div class="select-box">
+                <h2>Vyberte epizodu / film:</h2>
+                <select id="videoSelect" onchange="loadVideo()">
+                    <option value="">-- Zvolte epizodu / film --</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="playerContainer">
+            <video id="videoPlayer" controls autoplay name="media">
+                <source id="videoSource" src="" type="video/mp4">
+                <track id="subTrack" src="" kind="subtitles" srclang="en" label="English" default>
+            </video>
+        </div>
+    </div>
+
+    <script src="static/script.js"></script>
+</body>
+</html>
